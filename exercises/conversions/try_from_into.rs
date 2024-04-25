@@ -27,7 +27,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+
 
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
@@ -38,23 +38,51 @@ enum IntoColorError {
 // that correct RGB color values must be integers in the 0..=255 range.
 
 // Tuple implementation
+fn verify_color_range(val: i16) -> Result<u8, IntoColorError> {
+    if val >= 0 && val <= 255 {
+        Ok(val as u8)
+    } else {
+        Err(IntoColorError::IntConversion)
+    }
+}
+
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
+
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        Ok(Color {
+            red: verify_color_range(tuple.0)?,
+            green: verify_color_range(tuple.1)?,
+            blue: verify_color_range(tuple.2)?,
+        })
     }
 }
 
-// Array implementation
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
+
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        Ok(Color {
+            red: verify_color_range(arr[0])?,
+            green: verify_color_range(arr[1])?,
+            blue: verify_color_range(arr[2])?,
+        })
     }
 }
 
-// Slice implementation
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
+
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            Err(IntoColorError::BadLen)
+        } else {
+            Ok(Color {
+                red: verify_color_range(slice[0])?,
+                green: verify_color_range(slice[1])?,
+                blue: verify_color_range(slice[2])?,
+            })
+        }
     }
 }
 
